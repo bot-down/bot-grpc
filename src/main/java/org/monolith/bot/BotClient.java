@@ -51,16 +51,44 @@ public class BotClient {
    * greeting.
    */
   public static void main(String[] args) throws Exception {
-    BotClient client = new BotClient("localhost", 50051);
-    try {
-      /* Access a service running on the local machine on port 50051 */
-      String user = "OK";
-      if (args.length > 0) {
-        user = args[0]; /* Use the arg as the name to greet if provided */
-      }
-      client.send(user);
-    } finally {
-      client.shutdown();
+
+    String clientName;
+    if (args.length > 0) {
+      clientName = args[0];
+    } else {
+      clientName = "client";
     }
+
+    new Thread(() -> {
+
+      final BotClient client = new BotClient("localhost", 50051);
+
+      logger.log(Level.INFO, "thread start");
+      try {
+        while (true) {
+
+          try {
+            /* Access a service running on the local machine on port 50051 */
+            String notify = clientName + ": " + System.currentTimeMillis();
+            client.send(notify);
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "thread down");
+          }
+        }
+      } catch (Exception e) {
+        logger.log(Level.SEVERE, "thread down");
+      } finally {
+        logger.log(Level.SEVERE, "client shutdown");
+        try {
+          client.shutdown();
+        } catch (InterruptedException e) {
+          logger.log(Level.SEVERE, "client not shutdown");
+        }
+      }
+
+    }).start();
+
+    for (;;);
   }
 }
