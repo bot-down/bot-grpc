@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.monolith.bot";
+option java_outer_classname = "BotProto";
+option objc_class_prefix = "BN";
+
+package bot;
+
+// The greeting service definition.
+service Notifier {
+  // Sends a greeting
+  rpc Send (Notify) returns (NotifyAck) {}
+}
+
+
+message Notify {
+  string message = 1;
+}
+
+
+message NotifyAck {
+  string message = 1;
+}
